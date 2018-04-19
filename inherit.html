@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>继承</title>
+</head>
+<body>
+
+
+<script type="text/javascript">
+
+//构建函数继承
+    //定义一个超类/父类： 人
+        function Person (name, age) {
+            //人都有姓名，年龄，会吃饭，会睡觉
+            //传入出生年份 year，自动计算年龄
+            this.name = name;
+            this.age = age;
+            this.eat = function () {
+                alert('吃饭');
+            }
+            this.sleep = function () {
+                alert('睡觉');
+            }
+        }
+
+        //定义一个子类： 学生
+        //学生Student也是人，自然要继承超类 Person 的所有属性和方法
+        //学生都应当有姓名、年龄、会吃饭、会睡觉
+        //当然学生也有自己的一些属性：学号，学校名称等，和方法，比如都要去做一件事：写作业
+        function Student (stuID, schoolName, name, age) {
+            this.stuID = stuID;
+            this.schoolName = schoolName;
+            //用call调用 Person,以实现继承
+            Person.call(this, name, age);
+        }
+
+        Student.prototype.doHomework = function () {
+            alert('做作业');
+        }
+
+        //实例化一个学生
+        var stu1 = new Student(1001, '第一小学', '王宝宝',20);
+        console.log(stu1.stuID);       //1001
+        console.log(stu1.schoolName);  //'第一小学'
+        console.log(stu1.name);        //'王宝宝'
+        console.log(stu1.age);         //20
+        stu1.eat();                    //'吃饭'
+        stu1.sleep();                  //'睡觉'
+        stu1.doHomework();             //'做作业' 
+
+
+
+ //原型链是继承
+    //定义一个 Animal 构造函数，作为 Dog 的父类
+        function Animal () {
+            this.superType = 'Animal';
+        }
+
+        Animal.prototype.superSpeak = function () {
+            alert(this.superType);
+        }
+
+        function Dog (name) {
+            this.name = name;
+            this.type = 'Dog';  
+        }
+        //改变Dog的prototype指针，指向一个 Animal 实例
+        Dog.prototype = new Animal();
+        //上面那行就相当于这么写
+        //var animal = new Animal();
+        //Dog.prototype = animal;
+
+        Dog.prototype.speak = function () {
+        　　alert(this.type);
+        }
+        var doggie = new Dog('jiwawa');
+        doggie.superSpeak();  //Animal   
+
+
+
+
+//寄生式继承
+        function object( o ){
+          var G = function(){};
+          G.prototype = o;
+          return new G();
+        }
+        function CreateObj( srcObj ){
+          var dstObj = object( srcObj );
+          dstObj.sayName = function(){
+            return this.userName;
+          }
+          return dstObj;
+        }
+        var obj = {
+          userName : 'ghostwu',
+        };
+        var obj2 = CreateObj( obj );
+        console.log( obj2.sayName() ); //ghostwu
+
+
+	
+
+    //寄生组合式继承
+	function SuperType(name){   
+		this.name = name;  		  
+		this.colors = ["red","blue","green"];  
+		}  
+		  
+		SuperType.prototype.sayName = function(){  	  
+		alert(this.name);  		  
+		}
+
+		function SubType(name,age){  	  
+		SuperType.call(this,name);  	  
+		this.age = age;  
+		}  
+		  
+		inheritPrototype(SubType,SuperType);  		  
+		SubType.prototype.sayAge = function(){  		  
+		alert(this.age);   
+	}
+
+
+	//组合式继承
+	function SuperType(name){
+            this.name = name;
+            this.colors = ["red", "blue", "green"];
+        }
+         
+        SuperType.prototype.sayName = function(){
+            alert(this.name);
+        };
+ 
+        function SubType(name, age){ 
+            SuperType.call(this, name);           //借用构造函数，继承了SuperType,拥有name,colors属性，第一次调用
+            this.age = age;                       //自定义实例属性
+        }
+ 
+        SubType.prototype = new SuperType();      //构造原型链，继承原型属性和方法
+        SubType.prototype.constructor=SubType;
+        SubType.prototype.sayAge = function(){     //向原型中添加方法
+            alert(this.age);
+        };
+         
+        var instance1 = new SubType("Nicholas", 29);   //第二次调用
+        instance1.colors.push("black");
+        alert(instance1.colors);  //"red,blue,green,black"
+        instance1.sayName();      //"Nicholas";
+        instance1.sayAge();       //29
+         
+        
+        var instance2 = new SubType("Greg", 27);
+        alert(instance2.colors);  //"red,blue,green"
+        instance2.sayName();      //"Greg";
+        instance2.sayAge();       //27
+</script>
+</body>
+</html>
